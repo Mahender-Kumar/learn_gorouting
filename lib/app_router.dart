@@ -1,9 +1,12 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:learn_gorouting/app_scaffold.dart';
 import 'package:learn_gorouting/cms/cms.dart';
+import 'package:learn_gorouting/cms/cms1.dart';
+import 'package:learn_gorouting/cms/cms2.dart';
+import 'package:learn_gorouting/cms/cms3.dart';
 import 'package:learn_gorouting/dashboard.dart';
 import 'package:learn_gorouting/sms/sms.dart';
 import 'package:learn_gorouting/sms/sms1.dart';
@@ -67,22 +70,38 @@ class AppRouter {
           GoRoute(
               parentNavigatorKey: _shellNavigatorKey,
               path: '/sms',
+
               // builder: (BuildContext context, GoRouterState state) {
-              //   return SMS1();
+              //   return SMS();
               // },
               redirect: (context, state) {
-                // final goingToLogin = state.matchedLocation.startsWith('/sms1');
-                if (state.matchedLocation.startsWith('/sms1')) {
-                  return '/sms/sms1';
-                }
-                if (state.matchedLocation.startsWith('/sms2')) {
-                  return '/sms/sms2';
-                }
-                if (state.matchedLocation.startsWith('/sms3')) {
-                  return '/sms/sms3';
-                }
+                // print('toproute: ${state.topRoute}');
+                // print('Matched Location: ${state.matchedLocation}');
+                // print('Extra: ${state.extra}');
+                // print('Error: ${state.error}');
+                // print('Full Path: ${state.fullPath}');
+                // print('Name: ${state.name}');
+                // print('Page Key: ${state.pageKey}');
+                // print('Path: ${state.path}');
+                // print('Path Parameters: ${state.pathParameters}');
 
-                return '/sms/sms2';
+                // print('URI: ${state.uri}');
+
+                // print(state.namedLocation('sms'));
+                // final goingToLogin = state.matchedLocation.startsWith('/sms1');
+
+                if (state.fullPath == '/sms/sms1') {
+                  return '/sms/sms1';
+                } else if (state.fullPath == '/sms/sms2') {
+                  return '/sms/sms2';
+                } else if (state.fullPath == '/sms/sms3') {
+                  return '/sms/sms3';
+                } else {
+              
+                  return '/sms/sms1';
+                  // return null;
+                }
+                // '/sms/sms2';
               },
               routes: [
                 ShellRoute(
@@ -117,12 +136,65 @@ class AppRouter {
                 ),
               ]),
           GoRoute(
-            parentNavigatorKey: _shellNavigatorKey,
-            path: '/cms',
-            builder: (BuildContext context, GoRouterState state) {
-              return const CMS();
-            },
-          ),
+              parentNavigatorKey: _shellNavigatorKey,
+              path: '/cms',
+              // builder: (BuildContext context, GoRouterState state) {
+              //   return SMS1();
+              // },
+              redirect: (context, state) {
+                // final goingToLogin = state.matchedLocation.startsWith('/sms1');
+                if (state.matchedLocation.startsWith('/cms1')) {
+                  return '/cms/cms1';
+                }
+                if (state.matchedLocation.startsWith('/cms2')) {
+                  return '/cms/cms2';
+                }
+                if (state.matchedLocation.startsWith('/cms3')) {
+                  return '/cms/cms3';
+                }
+
+                return null;
+                // '/sms/sms2';
+              },
+              routes: [
+                ShellRoute(
+                  navigatorKey: _shellNavigatorKey2,
+                  builder: (BuildContext context, GoRouterState state,
+                      Widget child) {
+                    return CMS();
+                  },
+                  routes: [
+                    GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey2,
+                      path: '/cms1',
+                      builder: (BuildContext context, GoRouterState state) {
+                        return const CMS1();
+                      },
+                    ),
+                    GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey2,
+                      path: '/cms3',
+                      builder: (BuildContext context, GoRouterState state) {
+                        return const CMS3();
+                      },
+                    ),
+                    GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey2,
+                      path: '/cms2',
+                      builder: (BuildContext context, GoRouterState state) {
+                        return const CMS2();
+                      },
+                    ),
+                  ],
+                ),
+              ]),
+          // GoRoute(
+          //   parentNavigatorKey: _shellNavigatorKey,
+          //   path: '/cms',
+          //   builder: (BuildContext context, GoRouterState state) {
+          //     return const CMS();
+          //   },
+          // ),
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
             path: '/vps',
