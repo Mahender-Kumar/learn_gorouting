@@ -8,15 +8,19 @@ import 'package:learn_gorouting/cms/cms1.dart';
 import 'package:learn_gorouting/cms/cms2.dart';
 import 'package:learn_gorouting/cms/cms3.dart';
 import 'package:learn_gorouting/dashboard.dart';
+import 'package:learn_gorouting/scaffold_with_tabbar.dart';
+import 'package:learn_gorouting/sms/add_sms.dart';
 import 'package:learn_gorouting/sms/sms.dart';
 import 'package:learn_gorouting/sms/sms1.dart';
 import 'package:learn_gorouting/sms/sms2.dart';
 import 'package:learn_gorouting/sms/sms3.dart';
 import 'package:learn_gorouting/sst/sst.dart';
+import 'package:learn_gorouting/test2.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey2 = GlobalKey<NavigatorState>();
+final _shellNavigatorKey3 = GlobalKey<NavigatorState>();
 
 class AppRouter {
   AppRouter._();
@@ -48,6 +52,138 @@ class AppRouter {
     // },
     navigatorKey: _rootNavigatorKey,
     routes: [
+      StatefulShellRoute(
+          navigatorContainerBuilder: (context, navigationShell, children) {
+            return TabbedRootScreen(
+              navigationShell: navigationShell,
+              key: _shellNavigatorKey3,
+              children: children,
+            );
+            ScaffoldWithNestedNavigation2(
+              navigationShell: navigationShell,
+              children: children,
+            );
+          },
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state, navigationShell) {
+            // the UI shell
+            return navigationShell;
+            ScaffoldWithNestedNavigation(navigationShell: navigationShell);
+          },
+          branches: [
+            // first branch (A)
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorKey,
+              routes: [
+                // top route inside branch
+                GoRoute(
+                  path: '/cms/a',
+                  builder: (BuildContext context, GoRouterState state) {
+                    return RootScreen(
+                        label: 'A', detailsPath: '/cms/a/details');
+                  },
+                  // pageBuilder: (context, state) => const NoTransitionPage(
+                  //   child: RootScreen(label: 'A', detailsPath: '/a/details'),
+                  // ),
+                  routes: [
+                    // child route
+                    GoRoute(
+                      path: 'details',
+                      builder: (context, state) =>
+                          const DetailsScreen(label: 'A'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorKey2,
+              routes: [
+                // Shopping Cart
+                GoRoute(
+                  path: '/b',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                    child: RootScreen(label: 'B', detailsPath: '/b/details'),
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'details',
+                      builder: (context, state) =>
+                          const DetailsScreen(label: 'B'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ]),
+
+      StatefulShellRoute(
+          navigatorContainerBuilder: (context, navigationShell, children) {
+            return AppScaffold(
+              navigationShell: navigationShell,
+              key: _shellNavigatorKey3,
+              currentPath: state.uri.path,
+              body: child,
+              mobileNavs: 3,
+              children: children,
+            );
+            ScaffoldWithNestedNavigation2(
+              navigationShell: navigationShell,
+              children: children,
+            );
+          },
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state, navigationShell) {
+            // the UI shell
+            return navigationShell;
+            ScaffoldWithNestedNavigation(navigationShell: navigationShell);
+          },
+          branches: [
+            // first branch (A)
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorKey,
+              routes: [
+                // top route inside branch
+                GoRoute(
+                  path: '/cms/a',
+                  builder: (BuildContext context, GoRouterState state) {
+                    return RootScreen(
+                        label: 'A', detailsPath: '/cms/a/details');
+                  },
+                  // pageBuilder: (context, state) => const NoTransitionPage(
+                  //   child: RootScreen(label: 'A', detailsPath: '/a/details'),
+                  // ),
+                  routes: [
+                    // child route
+                    GoRoute(
+                      path: 'details',
+                      builder: (context, state) =>
+                          const DetailsScreen(label: 'A'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorKey2,
+              routes: [
+                // Shopping Cart
+                GoRoute(
+                  path: '/b',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                    child: RootScreen(label: 'B', detailsPath: '/b/details'),
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'details',
+                      builder: (context, state) =>
+                          const DetailsScreen(label: 'B'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ]),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (BuildContext context, GoRouterState state, Widget child) {
@@ -91,13 +227,19 @@ class AppRouter {
                 // final goingToLogin = state.matchedLocation.startsWith('/sms1');
 
                 if (state.fullPath == '/sms/sms1') {
+                  // print('SMS1');
                   return '/sms/sms1';
                 } else if (state.fullPath == '/sms/sms2') {
+                  // print('SMS2');
+
                   return '/sms/sms2';
                 } else if (state.fullPath == '/sms/sms3') {
+                  // print('SMS3');
                   return '/sms/sms3';
+                } else if (state.uri.path == '/sms/sms1/add_sms') {
+                  // print('Add SMS');
+                  return '/sms/sms1/add_sms';
                 } else {
-              
                   return '/sms/sms1';
                   // return null;
                 }
@@ -108,16 +250,52 @@ class AppRouter {
                   navigatorKey: _shellNavigatorKey2,
                   builder: (BuildContext context, GoRouterState state,
                       Widget child) {
-                    return SMS();
+                    // print(' state.uri.path,');
+                    // print(
+                    //   state.uri.path,
+                    // );
+                    return SMS(
+                      currentPath: state.uri.path,
+                    );
                   },
                   routes: [
                     GoRoute(
-                      parentNavigatorKey: _shellNavigatorKey2,
-                      path: '/sms1',
-                      builder: (BuildContext context, GoRouterState state) {
-                        return const SMS1();
-                      },
-                    ),
+                        parentNavigatorKey: _shellNavigatorKey2,
+                        path: '/sms1',
+                        builder: (BuildContext context, GoRouterState state) {
+                          print('asd');
+                          return const SMS1();
+                        },
+                        redirect: (context, state) {
+                          print('toproute: ${state.topRoute}');
+                          print('Matched Location: ${state.matchedLocation}');
+                          print('Extra: ${state.extra}');
+                          print('Error: ${state.error}');
+                          print('Full Path: ${state.fullPath}');
+                          print('Name: ${state.name}');
+                          print('Page Key: ${state.pageKey}');
+                          print('Path: ${state.path}');
+                          print('Path Parameters: ${state.pathParameters}');
+
+                          print('URI: ${state.uri}');
+                          // final goingToLogin = state.matchedLocation.startsWith('/sms1');
+                          if (state.uri.path == '/sms/sms1/add_sms') {
+                            return '/sms/sms1/add_sms';
+                          }
+                          // return null;
+                          // '/sms/sms2';
+                        },
+                        routes: [
+                          GoRoute(
+                            parentNavigatorKey: _shellNavigatorKey2,
+                            path: '/add_sms',
+                            builder:
+                                (BuildContext context, GoRouterState state) {
+                              print('Add SMS');
+                              return const AddSMS();
+                            },
+                          ),
+                        ]),
                     GoRoute(
                       parentNavigatorKey: _shellNavigatorKey2,
                       path: '/sms3',
@@ -143,14 +321,32 @@ class AppRouter {
               // },
               redirect: (context, state) {
                 // final goingToLogin = state.matchedLocation.startsWith('/sms1');
-                if (state.matchedLocation.startsWith('/cms1')) {
+                // if (state.matchedLocation.startsWith('/cms1')) {
+                //   return '/cms/cms1';
+                // }
+                // if (state.matchedLocation.startsWith('/cms2')) {
+                //   return '/cms/cms2';
+                // }
+                // if (state.matchedLocation.startsWith('/cms3')) {
+                //   return '/cms/cms3';
+                // }
+
+                if (state.fullPath == '/cms/cms1') {
+                  // print('SMS1');
                   return '/cms/cms1';
-                }
-                if (state.matchedLocation.startsWith('/cms2')) {
-                  return '/cms/cms2';
-                }
-                if (state.matchedLocation.startsWith('/cms3')) {
+                } else if (state.fullPath == '/cms/cms2') {
+                  // print('SMS2');
+
+                  return '/sms/sms2';
+                } else if (state.fullPath == '/cms/cms3') {
+                  // print('SMS3');
                   return '/cms/cms3';
+                } else if (state.uri.path == '/sms/sms1/add_sms') {
+                  // print('Add SMS');
+                  return '/sms/sms1/add_sms';
+                } else {
+                  return '/cms/cms1';
+                  // return null;
                 }
 
                 return null;
@@ -161,7 +357,9 @@ class AppRouter {
                   navigatorKey: _shellNavigatorKey2,
                   builder: (BuildContext context, GoRouterState state,
                       Widget child) {
-                    return CMS();
+                    return CMS(
+                      currentPath: state.uri.path,
+                    );
                   },
                   routes: [
                     GoRoute(
@@ -197,10 +395,21 @@ class AppRouter {
           // ),
           GoRoute(
             parentNavigatorKey: _shellNavigatorKey,
-            path: '/vps',
+            path: '/sst',
             builder: (BuildContext context, GoRouterState state) {
               return const SST();
             },
+            routes: [
+              GoRoute(
+                parentNavigatorKey: _shellNavigatorKey,
+                path: '/add_sms',
+                name: 'add_sms',
+                builder: (BuildContext context, GoRouterState state) {
+                  print('Add SMS');
+                  return const AddSMS();
+                },
+              ),
+            ],
           ),
           // GoRoute(
           //   parentNavigatorKey: _shellNavigatorKey,

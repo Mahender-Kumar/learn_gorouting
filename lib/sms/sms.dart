@@ -7,58 +7,92 @@ import 'package:learn_gorouting/sms/sms2.dart';
 import 'package:learn_gorouting/sms/sms3.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-class SMS extends ConsumerWidget {
+class SMS extends StatefulWidget {
+  final String currentPath;
   const SMS({
     super.key,
+    required this.currentPath,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: [
-              Tab(
-                child: Text('SMS1'),
-              ),
-              Tab(
-                child: Text('SMS2'),
-              ),
-              Tab(
-                child: Text('SMS3'),
-              ),
-            ],
-            onTap: (value) {
-              switch (value) {
-                case 0:
-                  GoRouter.of(context).go('/sms/sms1');
-                  print('SMS1');
-                  break;
-                case 1:
-                  GoRouter.of(context).go('/sms/sms2');
-                  break;
-                case 2:
-                  GoRouter.of(context).go('/sms/sms3');
-                  break;
-                default:
-              }
-            },
-          ),
-          title: const Text('Safety Management System'),
-        ),
-        body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            const SMS1(),
-            const SMS2(),
-            const SMS3(),
+  State<SMS> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<SMS> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    int index = widget.currentPath == '/sms/sms3'
+        ? 2
+        : widget.currentPath == '/sms/sms2'
+            ? 1
+            : 0;
+    _tabController.index = index;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // int index = currentPath == '/sms/sms3'
+    //     ? 2
+    //     : currentPath == '/sms/sms2'
+    //         ? 1
+    //         : 0;
+    //  navList.indexWhere(
+    //   (e) => e['path'] != '/' && currentPath.startsWith(e['path']),
+    // );
+    // int selectedIndex = index == -1 ? 0 : index;
+    return Scaffold(
+      appBar: AppBar(
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          tabs: [
+            Tab(
+              child: Text('SMS1'),
+            ),
+            Tab(
+              child: Text('SMS2'),
+            ),
+            Tab(
+              child: Text('SMS3'),
+            ),
           ],
+          onTap: (value) {
+            switch (value) {
+              case 0:
+                GoRouter.of(context).go('/sms/sms1');
+                print('SMS1');
+                break;
+              case 1:
+                GoRouter.of(context).go('/sms/sms2');
+                break;
+              case 2:
+                GoRouter.of(context).go('/sms/sms3');
+                break;
+              default:
+            }
+          },
         ),
+        title: const Text('Safety Management System'),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          const SMS1(),
+          const SMS2(),
+          const SMS3(),
+        ],
       ),
     );
   }

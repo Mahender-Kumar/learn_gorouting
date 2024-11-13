@@ -8,6 +8,7 @@ class AppScaffold extends ConsumerWidget {
   const AppScaffold({
     super.key,
     required this.currentPath,
+    required this.navigationShell,
     required this.body,
     this.secondaryBody,
     this.mobileNavs = 3,
@@ -18,17 +19,14 @@ class AppScaffold extends ConsumerWidget {
   final Widget? secondaryBody;
   final int mobileNavs;
 
+  /// The navigation shell and container for the branch Navigators.
+  final StatefulNavigationShell navigationShell;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<Map<String, dynamic>> navList = [];
 
     // Initial dashboard item
-    navList.add({
-      'icon': const Icon(Icons.dashboard_outlined),
-      'selectedIcon': const Icon(Icons.dashboard),
-      'label': 'Dashboard',
-      'path': '/dashboard',
-    });
 
     // Function to add items to navList based on permissions
     void addItem(String module, Icon icon, Icon selectedIcon, String label,
@@ -47,21 +45,13 @@ class AppScaffold extends ConsumerWidget {
     // Adding items to navList using the addItem function
     addItem('SM', const Icon(Icons.book_outlined), const Icon(Icons.book),
         'SMS', '/sms');
+    addItem('AM', const Icon(Icons.book_outlined), const Icon(Icons.book), 'AM',
+        '/cms/a');
 
-    addItem('VP', const Icon(Icons.directions_boat_filled_outlined),
-        const Icon(Icons.directions_boat_filled), 'VPS', '/vps');
     addItem('CM', const Icon(Icons.account_circle_outlined),
         const Icon(Icons.account_circle), 'CMS', '/cms');
     addItem('SS', const Icon(Icons.apartment_outlined),
         const Icon(Icons.apartment), 'SST', '/sst');
-
-    // logout
-    navList.add({
-      'icon': const Icon(Icons.help_outline_outlined),
-      'selectedIcon': const Icon(Icons.help_outline),
-      'label': 'Help',
-      'path': '/help',
-    });
 
     int index = navList.indexWhere(
       (e) => e['path'] != '/' && currentPath.startsWith(e['path']),
