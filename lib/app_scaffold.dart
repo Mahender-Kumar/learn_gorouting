@@ -1,26 +1,25 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:learn_gorouting/test2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AppScaffold extends ConsumerWidget {
-  const AppScaffold({
+  AppScaffold({
     super.key,
-    required this.currentPath,
     required this.navigationShell,
-    required this.body,
-    this.secondaryBody,
-    this.mobileNavs = 3,
+    required this.children,
   });
 
-  final Widget body;
-  final String currentPath;
-  final Widget? secondaryBody;
-  final int mobileNavs;
+  final List<Widget> children;
 
   /// The navigation shell and container for the branch Navigators.
   final StatefulNavigationShell navigationShell;
+
+  int mobileNavs = 3;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,10 +52,10 @@ class AppScaffold extends ConsumerWidget {
     addItem('SS', const Icon(Icons.apartment_outlined),
         const Icon(Icons.apartment), 'SST', '/sst');
 
-    int index = navList.indexWhere(
-      (e) => e['path'] != '/' && currentPath.startsWith(e['path']),
-    );
-    int selectedIndex = index == -1 ? 0 : index;
+    // int index = navList.indexWhere(
+    //   (e) => e['path'] != '/' && currentPath.startsWith(e['path']),
+    // );
+    // int selectedIndex = index == -1 ? 0 : index;
 
     return AdaptiveLayout(
       primaryNavigation: SlotLayout(
@@ -109,14 +108,15 @@ class AppScaffold extends ConsumerWidget {
                   ),
                 ),
               ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (index) async {
-                // if (navList[index]['path'] == '/logout') {
-                //   await FirebaseAuth.instance.signOut();
-                //   return;
-                // }
-                GoRouter.of(context).go(navList[index]['path'] ?? '/');
-              },
+              selectedIndex: navigationShell.currentIndex,
+              onDestinationSelected: (int index) => _onTap(context, index),
+              //  (index) async {
+              //   // if (navList[index]['path'] == '/logout') {
+              //   //   await FirebaseAuth.instance.signOut();
+              //   //   return;
+              //   // }
+              //   GoRouter.of(context).go(navList[index]['path'] ?? '/');
+              // },
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               padding: const EdgeInsets.all(0),
             ),
@@ -127,7 +127,10 @@ class AppScaffold extends ConsumerWidget {
         config: <Breakpoint, SlotLayoutConfig>{
           Breakpoints.smallAndUp: SlotLayout.from(
             key: const Key('Body All'),
-            builder: (_) => body,
+            builder: (_) => AnimatedBranchContainer(
+              currentIndex: navigationShell.currentIndex,
+              children: children,
+            ),
           ),
         },
       ),
@@ -151,8 +154,9 @@ class AppScaffold extends ConsumerWidget {
                     label: 'More',
                   ),
               ],
-              currentIndex:
-                  selectedIndex >= mobileNavs ? mobileNavs : selectedIndex,
+              currentIndex: navigationShell.currentIndex >= mobileNavs
+                  ? mobileNavs
+                  : navigationShell.currentIndex,
               onDestinationSelected: (index) {
                 if (index == mobileNavs) {
                   showModalBottomSheet(
@@ -172,8 +176,9 @@ class AppScaffold extends ConsumerWidget {
                             children: navList.skip(mobileNavs).map((e) {
                               return ListTile(
                                 dense: true,
-                                selected:
-                                    e['path'] == navList[selectedIndex]['path'],
+                                selected: e['path'] ==
+                                    navList[navigationShell.currentIndex]
+                                        ['path'],
                                 title: Text(e['label']),
                                 leading: e['icon'],
                                 onTap: () {
@@ -228,4 +233,57 @@ class AppScaffold extends ConsumerWidget {
       ),
     );
   }
+
+  /// tapping an item in the BottomNavigationBar.
+  void _onTap(BuildContext context, int index) {
+    // When navigating to a new branch, it's recommended to use the goBranch
+    // method, as doing so makes sure the last navigation state of the
+    // Navigator for the branch is restored.
+    navigationShell.goBranch(
+      index,
+      // A common pattern when using bottom navigation bars is to support
+      // navigating to the initial location when tapping the item that is
+      // already active. This example demonstrates how to support this behavior,
+      // using the initialLocation parameter of goBranch.
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+}
+
+class AnimatedBranchContainer extends StatelessWidget {
+  /// Creates a AnimatedBranchContainer
+  const AnimatedBranchContainer(
+      {super.key, required this.currentIndex, required this.children});
+
+  /// The index (in [children]) of the branch Navigator to display.
+  final int currentIndex;
+
+  /// The children (branch Navigators) to display in this container.
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+        children: children.mapIndexed(
+      (int index, Widget navigator) {
+        return AnimatedScale(
+          scale: index == currentIndex ? 1 : 1.5,
+          duration: const Duration(milliseconds: 400),
+          child: AnimatedOpacity(
+            opacity: index == currentIndex ? 1 : 0,
+            duration: const Duration(milliseconds: 400),
+            child: _branchNavigatorWrapper(index, navigator),
+          ),
+        );
+      },
+    ).toList());
+  }
+
+  Widget _branchNavigatorWrapper(int index, Widget navigator) => IgnorePointer(
+        ignoring: index != currentIndex,
+        child: TickerMode(
+          enabled: index == currentIndex,
+          child: navigator,
+        ),
+      );
 }

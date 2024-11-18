@@ -96,21 +96,29 @@ import 'package:learn_gorouting/sms/sms3.dart';
 //   }
 // }
 
-class ScaffoldWithNestedNavigation extends StatelessWidget {
+class ScaffoldWithNestedNavigation extends StatefulWidget {
   const ScaffoldWithNestedNavigation({
     Key? key,
     required this.navigationShell,
   }) : super(key: key ?? const ValueKey('ScaffoldWithNestedNavigation'));
   final StatefulNavigationShell navigationShell;
 
+  @override
+  State<ScaffoldWithNestedNavigation> createState() =>
+      _ScaffoldWithNestedNavigationState();
+}
+
+class _ScaffoldWithNestedNavigationState
+    extends State<ScaffoldWithNestedNavigation>
+    with SingleTickerProviderStateMixin {
   void _goBranch(int index) {
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       index,
       // A common pattern when using bottom navigation bars is to support
       // navigating to the initial location when tapping the item that is
       // already active. This example demonstrates how to support this behavior,
       // using the initialLocation parameter of goBranch.
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 
@@ -118,7 +126,7 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      initialIndex: navigationShell.currentIndex,
+      initialIndex: widget.navigationShell.currentIndex,
       child: Scaffold(
         appBar: AppBar(
           bottom: TabBar(
@@ -129,7 +137,7 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
             onTap: _goBranch,
           ),
         ),
-        body: navigationShell,
+        body: widget.navigationShell,
         // bottomNavigationBar: NavigationBar(
         //   selectedIndex: navigationShell.currentIndex,
         //   destinations: const [
